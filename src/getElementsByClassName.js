@@ -8,37 +8,38 @@ var getElementsByClassName = function(className){
   // your code here
   //You should use document.body, element.childNodes, and element.classList
 
-  var output = []
+  var output = [];
   
-  if(typeof(arguments[1]) == 'undefined'){
-	arguments[1] = document.body;
+  if( typeof(arguments[1]) === 'undefined' ) {
+	arguments[1] = document.body.childNodes;
   };
 
-  var elements = arguments[1];	//elements is an array of nodes 
+  var elements = arguments[1];	//elements is an array of nodes, readability alias
 
 	for(var i = 0; i < elements.length; i++){	//iterate through nodes-reported
-		if (typeof(elements[i].classList) !== 'undefined'){
-		
-		for(var j = 0; j < elements[i].classList.length; j++){	//checkthrough through each nodes-reported's classList
-			if(elements[i].classList[j] == className){ 
-				output.push(elements[i]);					//if matches className stores node element
+		if (!(typeof(elements[i].classList) === 'undefined')){
+			for(var j = 0; j < elements[i].classList.length; j++){	//checkthrough through each nodes-reported's classList
+				if(elements[i].classList[j] == className){ 
+					output.push(elements[i]);					//if matches className stores node element
+				};
 			};
 		};
-	
-		};
+		
 		//recursive DOM class DFS
-		for(var k = 0; k < children.length; k++){
+		for(var k = 0; k < elements[i].childNodes.length; k++){
 			getElementsByClassName(className, elements[i].childNodes);
-		};	
-			
-			
+		};		
 	};	//end of for loop	
 
   
-	if (document.body.className = className){
-		output.unshift(document.body);
+	for (var l = 0; l < document.body.classList.length; l++){
+		if(document.body.classList[l] == className){
+			output.unshift(document.body);
+		};
 	};
   
+  //debug
+  var output = output;
   return output;
   };
 
