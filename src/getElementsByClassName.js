@@ -4,63 +4,49 @@
 // };
 
 // But instead we're going to implement it from scratch:
-var getElementsByClassName = function(className){
-  // your code here
-  //You should use document.body, element.childNodes, and element.classList
+var getElementsByClassName = function(className) {
+    // your code here
+    //You should use document.body, element.childNodes, and element.classList
 
-  var output = [];
-  
-  if( typeof(arguments[1]) === 'undefined' ) {
-	arguments[1] = document.body.childNodes;
-  };
+    var output = Object.prototype.toString.call(output) == "[object Array]" ? output : [];
+	var output = (typeof(arguments[2]) !== 'undefined') ? arguments[2] : [];
 
-  var elements = arguments[1];	//elements is an array of nodes, readability alias
+    var elements = arguments[1]; //elements is an array of nodes, readability alias
 
-	for(var i = 0; i < elements.length; i++){	//iterate through nodes-reported
-		if (!(typeof(elements[i].classList) === 'undefined')){
-			for(var j = 0; j < elements[i].classList.length; j++){	//checkthrough through each nodes-reported's classList
-				if(elements[i].classList[j] == className){ 
-					output.push(elements[i]);					//if matches className stores node element
-				};
-			};
-		};
-		
-		//recursive DOM class DFS
-		for(var k = 0; k < elements[i].childNodes.length; k++){
-			getElementsByClassName(className, elements[i].childNodes);
-		};		
-	};	//end of for loop	
+    var initialize = _.once(function() {
+        if (typeof(elements) === 'undefined') {
+            elements = Array.prototype.slice.apply(document.body.childNodes);
+        };
+    });
+    initialize();
 
-  
-	for (var l = 0; l < document.body.classList.length; l++){
-		if(document.body.classList[l] == className){
-			output.unshift(document.body);
-		};
-	};
-  
-  //debug
-  var output = output;
-  return output;
-  };
+    var debugLength = elements.length;
+
+    for (var i = 0; i < elements.length; i++) { //iterate through nodes
+        element = elements[i];
+
+        if (element.className == 'somediv') {
+            var debug = true;
+        };
+
+        if (typeof(element.classList) !== 'undefined') {
+            for (var j = 0; j < element.classList.length; j++) { 
+                if (element.classList[j] == className) {
+                    output.push(element); //if matches className stores node element
+                };
+            };
+        };
 
 
-/*fails on  '<p><div class="somediv"><div class="innerdiv"><span class="targetClassName">yay</span></div></div></p>'
-cant find nested <span>
-result;
-[<body class=​"targetClassName">​…​</body>​]
-expectedArray;
-[<body class=​"targetClassName">​…​</body>​, <span class=​"targetClassName">​yay​</span>​]
+        var children = Array.prototype.slice.apply(element.childNodes)
+            //recursive DOM class DFS
+        for (var k = 0; k < children.length; k++) {
+            var childrenList = [];
+            childrenList.push(children[k]);
+            getElementsByClassName(className, childrenList, output); //sends single object, expects array?
+        };
 
+    }; //end of for loop	
 
-var htmlStrings = [
-  '<p class="targetClassName"></p>',
-  '<p class="otherClassName targetClassName"></p>',
-  '<p><p class="targetClassName"></p></p>',
-  '<p><p class="targetClassName"><p class="targetClassName"></p></p></p>',
-  '<p><p></p><p><p class="targetClassName"></p></p></p>',
-  '<p><p class="targetClassName"></p><p class="targetClassName"></p></p>',
-  '<p><div class="somediv"><div class="innerdiv"><span class="targetClassName">yay</span></div></div></p>'
-];
-
-
-*/
+    return (document.body.className == className) ? [document.body].concat(output) : output;
+};
